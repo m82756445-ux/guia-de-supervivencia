@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Supervivencia</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        /* ===== MENÚ PRINCIPAL ===== */
+        #menu {
+            min-height: 100vh;
+            background: url('principal.jpg') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: relative;
+        }
+        #menu::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.55);
+        }
+        #menu > * { position: relative; z-index: 1; }
+        
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            text-align: center;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+        .menu-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 380px;
+        }
+        .menu-btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            transition: all 0.3s;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .menu-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
+        .btn-incendio { background: #e63946; }
+        .btn-terremoto { background: #8d6e63; }
+        .btn-sismo { background: #6a4c93; }
+        .btn-huayco { background: #9c6644; }
+        .btn-mochila { background: #2a9d8f; }
+
+        /* ===== PANTALLAS ===== */
+        .screen {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a3a5c, #2d6a8f);
+            padding: 30px;
+            display: none;
+        }
+        .screen.active { display: block; }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 { text-align: center; margin-bottom: 20px; }
+        .back-btn {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* ===== TABS ANTES/DURANTE/DESPUÉS ===== */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab.active { background: #ff9f43; }
+        .tab-content {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: none;
+            line-height: 1.6;
+        }
+        .tab-content.active { display: block; }
+        .tab-content h3 { color: #ffd166; margin-bottom: 10px; }
+        .tab-content ul { padding-left: 20px; }
+        .tab-content li { margin: 8px 0; }
+
+        /* ===== FAMILIA ===== */
+        .family-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .member-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        .member-card .emoji { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+        .member-card .name { font-weight: bold; margin-bottom: 10px; }
+        .counter { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .counter button {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: #ff9f43;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .counter button:hover { transform: scale(1.1); }
+        .counter .value { font-size: 1.4rem; min-width: 30px; font-weight: bold; }
+        
+        .next-btn {
+            display: block;
+            margin: 0 0 0 auto;
+            padding: 12px 30px;
+            background: #ff9f43;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .next-btn:hover { background: #ffb86c; }
+        .next-btn:disabled { background: #555; cursor: not-allowed; }
+
+        /* ===== PLAN ===== */
+        .info-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 12px 0;
+        }
+        .info-box h3 { margin-bottom: 8px; color: #ffd166; }
+        .info-box p { margin: 5px 0; line-height: 1.5; }
+        .warning { background: rgba(255, 107, 107, 0.2); border-left: 4px solid #ff6b6b; }
+        .good { background: rgba(72, 187, 120, 0.2); border-left: 4px solid #48bb78; }
+        .hidden { display: none; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .plan-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #48bb78;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .plan-btn:hover { background: #5cd08a; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        th { color: #ffd166; }
+        .reset-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 25px;
+            background: transparent;
+            border: 2px solid #ff9f43;
+            color: #ff9f43;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .reset-btn:hover { background: #ff9f43; color: #fff; }
+        @media (max-width: 500px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .title { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== MENÚ PRINCIPAL ===== -->
+    <div id="menu">
+        <h1 class="title">📖 Manual de Supervivencia</h1>
+        <div class="menu-btns">
+            <button class="menu-btn btn-incendio" onclick="showDesastre('incendio')">🔥 Incendios</button>
+            <button class="menu-btn btn-terremoto" onclick="showDesastre('terremoto')">🌍 Terremoto</button>
+            <button class="menu-btn btn-sismo" onclick="showDesastre('sismo')">🌊 Sismo</button>
+            <button class="menu-btn btn-huayco" onclick="showDesastre('huayco')">🏔️ Huayco</button>
+            <button class="menu-btn btn-mochila" onclick="showMochila()">🎒 Arma tu mochila de emergencia</button>
+        </div>
+    </div>
+
+    <!-- ===== PANTALLA DE DESASTRES ===== -->
+    <div id="desastre" class="screen">
+        <div class="container">
+            <button class="back-btn" onclick="goMenu()">← Volver al menú</button>
+            <h1 id="desastre-title"></h1>
+            <div class="tabs">
+                <button class="tab active" onclick="showFase('antes')">Antes</button>
+                <button class="tab" onclick="showFase('durante')">Durante</button>
+                <button class="tab" onclick="showFase('despues')">Después</button>
+            </div>
+            <div id="antes" class="tab-content active"></div>
+            <div id="durante" class="tab-content"></div>
+            <div id="despues" class="tab-content"></div>
+        </div>
+    </div>
+
+    <!-- ===== PANTALLA DE MOCHILA (PASO 1: FAMILIA) ===== -->
+    <div id="mochila" class="screen">
+        <div class="container">
+            <button class="back-btn" onclick="goMenu()">← Volver al menú</button>
+            <h1>👨‍👩‍👧‍👦 Selecciona tu hogar</h1>
+            <p style="text-align:center; opacity:0.8; margin-bottom:20px;">Elige cuántas personas y mascotas viven contigo (0 a 5):</p>
+            <div class="family-grid">
+                <div class="member-card">
+                    <span class="emoji">👨</span><div class="name">Adultos</div>
+                    <div class="counter">
+                        <button onclick="changeCount('adultos', -1)">−</button>
+                        <span class="value" id="val-adultos">0</span>
+                        <button onclick="changeCount('adultos', 1)">+</button>
+                    </div>
+                </div>
+                <div class="member-card">
+                    <span class="emoji">👴</span><div class="name">Adultos mayores</div>
+                    <div class="counter">
+                        <button onclick="changeCount('mayores', -1)">−</button>
+                        <span class="value" id="val-mayores">0</span>
+                        <button onclick="changeCount('mayores', 1)">+</button>
+                    </div>
+                </div>
+                <div class="member-card">
+                    <span class="emoji">🧒</span><div class="name">Niños</div>
+                    <div class="counter">
+                        <button onclick="changeCount('ninos', -1)">−</button>
+                        <span class="value" id="val-ninos">0</span>
+                        <button onclick="changeCount('ninos', 1)">+</button>
+                    </div>
+                </div>
+                <div class="member-card">
+                    <span class="emoji">🐕</span><div class="name">Perros</div>
+                    <div class="counter">
+                        <button onclick="changeCount('perros', -1)">−</button>
+                        <span class="value" id="val-perros">0</span>
+                        <button onclick="changeCount('perros', 1)">+</button>
+                    </div>
+                </div>
+                <div class="member-card">
+                    <span class="emoji">🐈</span><div class="name">Gatos</div>
+                    <div class="counter">
+                        <button onclick="changeCount('gatos', -1)">−</button>
+                        <span class="value" id="val-gatos">0</span>
+                        <button onclick="changeCount('gatos', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <button class="next-btn" id="btn-next" onclick="generarPlan()" disabled>Siguiente →</button>
+        </div>
+    </div>
+
+    <!-- ===== PANTALLA DE PLAN ===== -->
+    <div id="plan" class="screen">
+        <div class="container">
+            <button class="back-btn" onclick="showMochila()">← Volver</button>
+            <h1>🧰 Tu plan de emergencia</h1>
+            <div id="plan-content"></div>
+            <button class="reset-btn" onclick="goMenu()">🏠 Volver al menú principal</button>
+        </div>
+    </div>
+
+    <script>
+        // ====== ESTADO ======
+        let family = { adultos: 0, mayores: 0, ninos: 0, perros: 0, gatos: 0 };
+        const MAX = 5;
+        const DIAS = 4;
+
+        // ====== NAVEGACIÓN ======
+        function goMenu() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('menu').style.display = 'flex';
+        }
+        function showDesastre(tipo) {
+            document.getElementById('menu').style.display = 'none';
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('desastre').classList.add('active');
+            cargarDesastre(tipo);
+        }
+        function showMochila() {
+            document.getElementById('menu').style.display = 'none';
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('mochila').classList.add('active');
+        }
+        function showFase(fase) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(fase).classList.add('active');
+        }
+
+        // ====== CONTENIDO DE DESASTRES ======
+        const desastres = {
+            incendio: {
+                titulo: '🔥 Incendios',
+                antes: [
+                    'Instala detectores de humo en cada piso y prueba su batería cada mes.',
+                    'Ten un extintor en la cocina y aprende a usarlo (PASO: tirar, apuntar, apretar, barrer).',
+                    'Diseña un plan de escape con 2 salidas por habitación y un punto de reunión afuera.',
+                    'No sobrecargues enchufes ni dejes velas encendidas sin vigilancia.'
+                ],
+                durante: [
+                    'Si el fuego es pequeño y controlable, usa el extintor. Si no, ¡evacúa!',
+                    'Sal agachado, el humo sube. Cúbrete la boca con un trapo húmedo.',
+                    'Toca las puertas con el dorso de la mano; si están calientes, no las abras.',
+                    'No uses ascensores. Ve por las escaleras y no vuelvas a entrar por nada.'
+                ],
+                despues: [
+                    'Reúnete en el punto acordado y haz conteo de todos.',
+                    'No entres a un edificio quemado hasta que los bomberos lo permitan.',
+                    'Reporta el incendio a las autoridades y revisa si hay heridos.',
+                    'Revisa cables y conexiones antes de volver a usar electricidad.'
+                ]
+            },
+            terremoto: {
+                titulo: '🌍 Terremoto',
+                antes: [
+                    'Asegura muebles altos y estantes a la pared.',
+                    'Prepara tu mochila de emergencia y tenla en un lugar accesible.',
+                    'Identifica zonas seguras: bajo mesas resistentes o junto a columnas.',
+                    'Define un punto de reunión familiar y practica simulacros.'
+                ],
+                durante: [
+                    'Agáchate, cúbrete y agárrate bajo una mesa resistente.',
+                    'Aléjate de ventanas, espejos y objetos que puedan caer.',
+                    'Si estás en la calle, aléjate de edificios, postes y cables.',
+                    'Mantén la calma y no corras; espera a que deje de temblar.'
+                ],
+                despues: [
+                    'Revisa si hay heridos y brinda primeros auxilios si sabes.',
+                    'Corta el gas y la electricidad si hay fugas o chispas.',
+                    'Sal con cuidado, revisa escaleras antes de usarlas.',
+                    'Prepárate para réplicas; mantente alerta.'
+                ]
+            },
+            sismo: {
+                titulo: '🌊 Sismo',
+                antes: [
+                    'Conoce las rutas de evacuación de tu casa y zona.',
+                    'Ten una linterna y radio a pilas a la mano.',
+                    'Asegura objetos pesados y ten a mano tu mochila.',
+                    'Acuerda un punto de encuentro con tu familia.'
+                ],
+                durante: [
+                    'Agáchate, cúbrete y agárrate. No salgas corriendo.',
+                    'Si estás en la cama, quédate y cúbrete la cabeza con la almohada.',
+                    'Aléjate de ventanas y objetos que puedan caer.',
+                    'Si estás en la calle, aléjate de edificios y cables.'
+                ],
+                despues: [
+                    'Revisa si hay heridos y llama a emergencias si es grave.',
+                    'Revisa fugas de gas y agua; si hay olor a gas, ventila y no enciendas nada.',
+                    'No uses el teléfono salvo emergencias para no saturar la línea.',
+                    'Mantente informado por radio y prepárate para réplicas.'
+                ]
+            },
+            huayco: {
+                titulo: '🏔️ Huayco',
+                antes: [
+                    'No construyas ni vivas cerca de cauces de quebradas o laderas.',
+                    'Identifica las rutas de evacuación hacia zonas altas.',
+                    'Ten tu mochila lista y un plan de reunión familiar.',
+                    'Presta atención a alertas de lluvias intensas de Defensa Civil.'
+                ],
+                durante: [
+                    'Sube a zonas altas y seguras, lejos del cauce.',
+                    'No cruces puentes ni ríos crecidos, ni a pie ni en auto.',
+                    'Aléjate de laderas inestables y del cauce del agua.',
+                    'No intentes grabar ni acercarte al huayco por curiosidad.'
+                ],
+                despues: [
+                    'No regreses a tu casa hasta que sea seguro y lo indiquen las autoridades.',
+                    'Ten cuidado con cables caídos y estructuras dañadas.',
+                    'Reporta desaparecidos o heridos a emergencias.',
+                    'Evita el agua de la zona; puede estar contaminada.'
+                ]
+            }
+        };
+
+        function cargarDesastre(tipo) {
+            const d = desastres[tipo];
+            document.getElementById('desastre-title').textContent = d.titulo;
+            document.getElementById('antes').innerHTML = '<h3>✅ Antes</h3><ul>' + d.antes.map(i => '<li>' + i + '</li>').join('') + '</ul>';
+            document.getElementById('durante').innerHTML = '<h3>⚡ Durante</h3><ul>' + d.durante.map(i => '<li>' + i + '</li>').join('') + '</ul>';
+            document.getElementById('despues').innerHTML = '<h3>🔁 Después</h3><ul>' + d.despues.map(i => '<li>' + i + '</li>').join('') + '</ul>';
+            // Resetear pestañas
+            document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+            document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === 0));
+        }
+
+        // ====== CONTADORES DE FAMILIA ======
+        function totalPersonas() { return family.adultos + family.mayores + family.ninos; }
+        function totalMascotas() { return family.perros + family.gatos; }
+        function changeCount(tipo, delta) {
+            family[tipo] = Math.max(0, Math.min(MAX, family[tipo] + delta));
+            document.getElementById('val-' + tipo).textContent = family[tipo];
+            document.getElementById('btn-next').disabled = totalPersonas() === 0;
+        }
+
+        // ====== CÁLCULOS REALISTAS DE MOCHILA ======
+        // Agua: 3L/persona/día pero la mochila lleva lo que se puede cargar.
+        // Realista: una mochila lleva ~4L por persona (2 botellas de 2L) + filtro/purificador.
+        // El plan de 4 días asume que se raciona y se busca agua.
+        function calcularMochila() {
+            const personas = totalPersonas();
+            const mascotas = totalMascotas();
+            // Agua cargable: 4L por persona (lo que cabe en la mochila) + 1L por mascota
+            const aguaMochila = personas * 4 + mascotas * 1;
+            // Comida enlatada para 4 días: 2 latas/persona/día, 1 lata/mascota/día
+            const comida = (personas * 2 + mascotas * 1) * DIAS;
+            return { aguaMochila, comida };
+        }
+
+        function kitsSugeridos() {
+            const kits = [];
+            if (family.ninos > 0) kits.push('🧸 Kit infantil: pañales, leche en polvo, juguetes, ropa');
+            if (family.mayores > 0) kits.push('💊 Kit adultos mayores: medicamentos crónicos, lentes, documentos');
+            if (family.perros > 0) kits.push('🐕 Kit canino: comida, correa, agua, botiquín');
+            if (family.gatos > 0) kits.push('🐈 Kit felino: comida, arenero portátil, transportadora');
+            kits.push('🧰 Kit general: linterna, radio, botiquín, silbato, dinero, copia de documentos');
+            return kits;
+        }
+
+        function racionamiento() {
+            const presentes = [];
+            if (family.adultos > 0) presentes.push('Adultos');
+            if (family.mayores > 0) presentes.push('Adultos mayores');
+            if (family.ninos > 0) presentes.push('Niños');
+            if (family.perros > 0) presentes.push('Perros');
+            if (family.gatos > 0) presentes.push('Gatos');
+            const raciones = {
+                'Adultos': ['3 comidas/día: 1 plato de enlatado + sorbos de agua', '3 litros/día'],
+                'Adultos mayores': ['Comidas pequeñas y frecuentes (4-5/día), alimentos suaves', '2.5 litros/día'],
+                'Niños': ['3 comidas/día en porciones pequeñas, priorizar leche', '1.5-2 litros/día'],
+                'Perros': ['1-2 tazas de alimento/día', '1 litro/día'],
+                'Gatos': ['1 taza de alimento/día', '0.5 litro/día']
+            };
+            return presentes.map(p => ({ grupo: p, ...raciones[p] }));
+        }
+
+        function generarPlan() {
+            const personas = totalPersonas();
+            const mascotas = totalMascotas();
+            const { aguaMochila, comida } = calcularMochila();
+            const kits = kitsSugeridos();
+            const raciones = racionamiento();
+
+            let html = '';
+            html += `<div class="info-box good">
+                <h3>👨‍👩‍👧‍👦 Tu familia</h3>
+                <p>👨 Adultos: <b>${family.adultos}</b> | 👴 Mayores: <b>${family.mayores}</b> | 🧒 Niños: <b>${family.ninos}</b></p>
+                <p>🐕 Perros: <b>${family.perros}</b> | 🐈 Gatos: <b>${family.gatos}</b></p>
+                <p>Total: <b>${personas}</b> personas y <b>${mascotas}</b> mascotas</p>
+            </div>`;
+
+            html += `<div class="summary-grid">
+                <div class="info-box">
+                    <h3>💧 Agua en la mochila</h3>
+                    <p style="font-size:1.5rem; text-align:center; color:#4fc3f7;"><b>${aguaMochila} litros</b></p>
+                    <p style="font-size:0.85rem; opacity:0.8; text-align:center;">Lo que puedes cargar. Raciónala: ${(aguaMochila/DIAS).toFixed(1)} L/día. Lleva también pastillas purificadoras.</p>
+                </div>
+                <div class="info-box">
+                    <h3>🥫 Comida enlatada</h3>
+                    <p style="font-size:1.5rem; text-align:center; color:#ffd166;"><b>${comida} latas</b></p>
+                    <p style="font-size:0.85rem; opacity:0.8; text-align:center;">Para ${DIAS} días (${comida/DIAS} latas/día). Prioriza latas pequeñas y ligeras.</p>
+                </div>
+            </div>`;
+
+            html += `<div class="info-box">
+                <h3>🎒 Kits sugeridos</h3>`;
+            kits.forEach(k => { html += `<p>• ${k}</p>`; });
+            html += `</div>`;
+
+            html += `<button class="plan-btn" onclick="togglePlan()">🍽️ Crea tu plan de comidas</button>`;
+
+            html += `<div id="plan-comidas" class="hidden">
+                <div class="info-box">
+                    <h3>📋 Guía de racionamiento (hasta 4 días sepultado)</h3>
+                    <p style="opacity:0.8; margin-bottom:10px;">Raciones diarias sugeridas por miembro para que el alimento y el agua alcancen:</p>
+                    <table><tr><th>Miembro</th><th>Comida diaria</th><th>Agua diaria</th></tr>`;
+            raciones.forEach(r => {
+                html += `<tr><td><b>${r.grupo}</b></td><td>${r.comida}</td><td>${r.agua}</td></tr>`;
+            });
+            html += `</table>
+                    <div class="warning" style="margin-top:12px; padding:12px; border-radius:8px;">
+                        <p>⚠️ <b>Consejo:</b> raciona el agua en sorbos pequeños a lo largo del día. Si el agua se acaba, busca fuentes seguras y purifícala con pastillas o hirviéndola.</p>
+                    </div>
+                </div>
+            </div>`;
+
+            document.getElementById('plan-content').innerHTML = html;
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('plan').classList.add('active');
+        }
+
+        function togglePlan() {
+            const plan = document.getElementById('plan-comidas');
+            plan.classList.toggle('hidden');
+            const btn = document.querySelector('.plan-btn');
+            btn.textContent = plan.classList.contains('hidden') ? '🍽️ Crea tu plan de comidas' : '📋 Ocultar plan de comidas';
+        }
+    </script>
+</body>
+</html>
